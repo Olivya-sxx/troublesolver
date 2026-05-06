@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苦恼解决器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #0f0f1a;
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            color: #fff;
+            letter-spacing: 8px;
+            margin-bottom: 15px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+        }
+        .section-title {
+            font-size: 0.85em;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            padding-left: 5px;
+        }
+        .trouble-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 50px;
+        }
+        .trouble-item {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 18px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .trouble-item:hover {
+            background: linear-gradient(145deg, #252545, #1e1e38);
+            border-color: #4a4a7a;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .trouble-item.active {
+            background: linear-gradient(145deg, #2d1f5e, #1a1040);
+            border-color: #6366f1;
+            color: #c7d2fe;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+        }
+        .solutions-panel {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 25px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .solutions-panel.show { display: block; }
+        .solutions-title {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #a5b4fc;
+            font-weight: 400;
+        }
+        .solution-cards { display: flex; flex-direction: column; gap: 12px; }
+        .solution-card {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            color: #c7d2fe;
+            font-size: 15px;
+        }
+        .solution-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.4);
+            padding-left: 30px;
+        }
+        .solution-card .arrow {
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        .solution-card:hover .arrow {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+        .detail-panel {
+            background: #fefefe;
+            color: #1a1a2e;
+            border-radius: 20px;
+            padding: 45px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .detail-panel.show { display: block; }
+        .detail-title {
+            font-size: 1.5em;
+            color: #4f46e5;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .detail-content {
+            white-space: pre-wrap;
+            font-size: 16px;
+            line-height: 2;
+            color: #333;
+        }
+        .back-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 35px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(79, 70, 229, 0.4);
+        }
+        .hint {
+            text-align: center;
+            color: #444;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; letter-spacing: 4px; }
+            .trouble-list { grid-template-columns: repeat(2, 1fr); }
+            .detail-panel { padding: 30px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>苦恼解决器</h1>
+            <p class="subtitle">选择你此刻的困境，找到解法</p>
+        </header>
+
+        <p class="section-title">你在苦恼什么？</p>
+        <div class="trouble-list" id="troubleList"></div>
+
+        <div class="solutions-panel" id="solutionsPanel">
+            <div class="solutions-title" id="solutionsTitle"></div>
+            <div class="solution-cards" id="solutionCards"></div>
+            <p class="hint">点击任意方案查看详细内容</p>
+        </div>
+
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-title" id="detailTitle"></div>
+            <div class="detail-content" id="detailContent"></div>
+            <button class="back-btn" onclick="goBackToSolutions()">← 返回方案列表</button>
+        </div>
+    </div>
+
+    <script>
+        var troubleIndex = {};
+        var solutionDetails = {};
+
+        troubleIndex["写作瓶颈"] = ["情况比你想象的更糟", "三小时", "设定一个数量目标"];
+        troubleIndex["分析瘫痪"] = ["你只需承担后果", "决策狩猎", "设定一个数量目标"];
+        troubleIndex["愤怒"] = ["品味烦恼", "何为干扰"];
+        troubleIndex["焦虑"] = ["反对生产力债务", "未来尚未来临", "莫管他人瓦上霜"];
+        troubleIndex["回避"] = ["皮艇和超级游艇", "到棚屋去"];
+        troubleIndex["忙碌"] = ["情况比你想象的更糟", "反对生产力债务", "信息过载", "先令神志清明再出发"];
+        troubleIndex["气馁"] = ["你只需承担后果", "你无法事事挂心", "到棚屋去", "这事容易又怎么了"];
+        troubleIndex["动力不足"] = ["决策狩猎", "这事容易又怎么了", "事在人为"];
+        troubleIndex["绝望"] = ["情况比你想象的更糟", "寻找人生任务"];
+        troubleIndex["对世界绝望"] = ["你无法事事挂心"];
+        troubleIndex["失去方向"] = ["寻找人生任务", "重中之重"];
+        troubleIndex["无力感"] = ["你只需承担后果", "你无法事事挂心", "这事容易又怎么了"];
+        troubleIndex["脱离现实"] = ["别对未来的你那么好", "你不能囤积人生"];
+        troubleIndex["分心"] = ["信息过载", "三小时", "何为干扰"];
+        troubleIndex["恐惧未来"] = ["你无法事事挂心", "未来尚未来临"];
+        troubleIndex["害怕行动"] = ["决策狩猎", "到棚屋去", "这事容易又怎么了"];
+        troubleIndex["内疚"] = ["你只需承担后果", "反对生产力债务", "反黄金法则", "别阻碍你的慷慨"];
+        troubleIndex["匆忙"] = ["反对生产力债务", "未来尚未来临", "先令神志清明再出发"];
+        troubleIndex["冒名顶替综合征"] = ["情况比你想象的更糟", "反黄金法则"];
+        troubleIndex["缺乏恒心"] = ["规则为人生服务"];
+        troubleIndex["犹豫不决"] = ["你只需承担后果", "决策狩猎", "寻找人生任务"];
+        troubleIndex["信息过载_苦恼"] = ["信息过载"];
+        troubleIndex["不安全感"] = ["反对生产力债务", "未来尚未来临"];
+        troubleIndex["易怒"] = ["品味烦恼", "何为干扰"];
+        troubleIndex["了无生趣"] = ["要么是好时光，要么是好故事", "别对未来的你那么好", "你不能囤积人生"];
+        troubleIndex["无意义感"] = ["寻找人生任务", "不可思议", "重中之重"];
+        troubleIndex["控制欲"] = ["情况比你想象的更糟", "三小时", "要么是好时光，要么是好故事"];
+        troubleIndex["生产力低下"] = ["反对生产力债务", "决策狩猎", "规则为人生服务", "三小时"];
+        troubleIndex["完美主义"] = ["情况比你想象的更糟", "皮艇和超级游艇", "规则为人生服务", "反黄金法则", "设定一个数量目标"];
+        troubleIndex["悲观"] = ["情况比你想象的更糟", "你无法事事挂心", "事在人为"];
+        troubleIndex["拖延"] = ["皮艇和超级游艇", "决策狩猎", "到棚屋去", "别对未来的你那么好", "先令神志清明再出发"];
+        troubleIndex["后悔"] = ["决策狩猎", "要么是好时光，要么是好故事", "你不能囤积人生"];
+        troubleIndex["人际关系"] = ["情况比你想象的更糟", "你只需承担后果", "莫管他人瓦上霜"];
+        troubleIndex["自我批评"] = ["重中之重", "反黄金法则", "别对未来的你那么好"];
+        troubleIndex["怯懦"] = ["事在人为"];
+        troubleIndex["未竟事务"] = ["有始有终", "到棚屋去"];
+        troubleIndex["在意他人看法"] = ["你只需承担后果", "莫管他人瓦上霜"];
+
+        solutionDetails["情况比你想象的更糟"] = {
+            title: "情况比你想象的更糟：失败是一种解脱",
+            content: "你是一个生而有限的人（你的时间有限，你对时间的控制也有限），人生真的比你想象的要糟糕得多。事实上，它毫无希望可言。\n\n慈友禅师的见解是，增加负担—帮助他们看到自己的处境根本不可救药，从而允许自己停止挣扎—往往是更仁慈、更有效的做法。\n\n我们真正的问题出在竟然以为生而有限的人能够掌控人生，得到安全感。毕竟，我们无法摆脱人生，并因此而受到种种限制，感到窒息，找不到逃生通道。\n\n当你意识到你的处境比你想象的还要糟糕时，你就不再需要在生活中时时摆出防冲撞姿势，拼命祈祷有人能阻止飞机坠毁了。\n\n你明白，飞机已经坠毁了（你一出生，你乘坐的飞机就已经坠毁）。你已经被困在荒岛上，只能和其他幸存者一起尽力活下去。"
+        };
+        solutionDetails["三小时"] = {
+            title: "三小时：在混乱中找到重点",
+            content: "在你的情况允许的范围内—尝试每天留出三到四个小时的无邀约免干扰时间。\n\n同样重要的第二部分是，不必殷切地规划一天中的其他时间：接受它们的零碎混乱，那是人生里免不了的。人生而有限，要做的事永远做不完。\n\n犹太教和基督教安息日传统的一个核心观点是，无论如何你都必须停下来—不是因为你已经大功告成，而是因为叫停的时间到了。\n\n「三到四小时规则」真正有助于培养的，是一项极具价值的能力—不是让自己更加努力的能力，而是在半途中抑制住心里的不安并停下来休整的能力。"
+        };
+        solutionDetails["设定一个数量目标"] = {
+            title: "设定一个数量目标：开除你内心深处的质控员",
+            content: "有一个更务实的不完美主义的方法可以消解你对结果的执念，那就是设定一个数量目标。\n\n没有必要假装你不在意工作结果，也没有必要消灭你内心深处的那个控制狂。给那个家伙找点事干—任何事情都可以，只要与结果的质量无关。\n\n创业家詹姆斯·阿尔图切尔建议，每天在便笺上写下十个貌似诱人的想法，具体内容不限。\n\n如果你老是想不出来怎么办？「我教你一招：如果你想不出十个点子，那就想二十个点子。」\n\n数量目标让你重新回到驾驶员的座位：你不再期待做出好东西，而是确定你会有所产出。\n\n一种写作方法叫「自由写作」，在设定一个时间目标（比如十分钟）之后，不停地写，直到计时器响起。关键在于打破常规安排。\n\n在自由写作时，你要解雇守门人，无论有没有东西可写，都要写。如果想不出什么可写的，那就写「想不出来写什么」这件事本身。"
+        };
+        solutionDetails["你只需承担后果"] = {
+            title: "你只需承担后果：付出代价",
+            content: "正如谢尔登·B·科普所言，自由是一种认识，认识到只要你愿意付出代价，就没有什么能阻止你去做任何事情。\n\n除非你真的受到胁迫不得不做某件事情，否则口头上声称的「不得不做」其实表明你选择不付出拒绝的代价。\n\n人生路上做任何一次选择时，都只需要问两个问题：\n\n一问代价是什么，二问是否值得付出。\n\n无论你做出什么选择，只要你本着勇于面对后果的精神，结果都将是自由的，这是有限的人类所能享受到的唯一意义上的自由。\n\n它不是不受局限的自由（那是我们永远无法体验到的），而是局限中的自由。自由地权衡利弊得失，然后按你的心意抉择。"
+        };
+        solutionDetails["决策狩猎"] = {
+            title: "决策狩猎：选择穿越森林的路径",
+            content: "第一条是，只有当你在现实中根据决策有所行动，让你放弃的某些选择变得遥不可及时，你的决策才算得上真正的决策。\n\n仅仅在心里告诉自己「我已经选好了」，这还不够。\n\n与第一条规则相平衡的另一条规则是，只要一个决策符合上述标准，哪怕它再微小也算数。"
+        };
+        solutionDetails["品味烦恼"] = {
+            title: "品味烦恼：人不可能无忧无虑",
+            content: "如果我明白我永远克服不了所有问题，我就可以更充分地，甚至是津津有味地投入我实际遭遇的问题中去。\n\n我不再需要保持奋力摆脱当下困境、奔向无忧无虑的未来的姿态—人生而有限，时间宝贵，这种姿态太荒谬了。\n\n我可以自由地追求人生，不是无忧无虑的人生，而是更有趣、更全情投入的人生。"
+        };
+        solutionDetails["何为干扰"] = {
+            title: "何为干扰：随时分心的能力很重要",
+            content: "我们要以更中立的态度来对待被我们贬低为「干扰」和「分心」的现象。保罗·卢曼斯称这些现象为「不速之客」。\n\n他建议，遇到不速之客时，应当全神贯注地对待它。\n\n也就是说：一旦你的注意力已经转移，就不要与现实抗争。直面新的现实。\n\n相比于试图把部分注意力集中在你刚才正在做的事情上，这样做对所有亲历者来说都要愉快得多。\n\n我们松手放开当天的计划，结果发现自己跌进了生活。"
+        };
+        solutionDetails["反对生产力债务"] = {
+            title: "反对生产力债务：「已毕事项清单」的非凡之处",
+            content: "我最喜欢的对抗生产力债务的方法是创建「已毕事项清单」。\n\n这个清单记录的不是你计划今天完成的任务，而是你今天到目前为止已经完成的任务。它会随着时间的推移而变长。\n\n你只需在完成任务后不删除它们，而把它们移到一个单独的列表或文件夹中，然后心满意足地目睹它们不断累积。"
+        };
+        solutionDetails["未来尚未来临"] = {
+            title: "未来尚未来临：船到桥头自然直",
+            content: "正如汉娜·阿伦特所写的：\n\n「我们总是被渴望和恐惧束缚在充满不确定性的未来中，我们剥夺了每个当下的平静，剥夺了其内在的意义，无法享受它们。就这样，未来摧毁了现在。」"
+        };
+        solutionDetails["莫管他人瓦上霜"] = {
+            title: "莫管他人瓦上霜：自扫门前雪",
+            content: "别人的负面情绪归根结底是别人的问题。你必须允许别人拥有他们的问题。\n\n「他人瓦上霜」是另一个领域，在其中作为控制力有限的人类，最好的做法通常不是插手干预，而是让事情顺其自然。\n\n人们会发现，你对待他们的态度谨小慎微，你履行对他们的承诺只是为了让自己感觉好一点，而不是真心实意地想要帮助他们，他们会觉得你在屈就或操纵他们。\n\n有时，你的竭力讨好之举会增加他们的负担。很多时候，造福他人的最佳方式就是专注于做好自己的事情。"
+        };
+        solutionDetails["皮艇和超级游艇"] = {
+            title: "皮艇和超级游艇：说做就做",
+            content: "重点在于培养一种意愿—乐意在此时此地做一件仅此一回的事情，无论它是否属于某个系统、习惯或常规。\n\n如果不优先培养「说做就做」的能力，你就有可能掉进一个极其阴险的陷阱，最终会走上一条不必要的，甚至适得其反的道路。\n\n你做这一件事，不是为了自我提升（计划），而是因为你在「划着皮艇来到浪尖」时做成的那件事，其本身就值得做。"
+        };
+        solutionDetails["到棚屋去"] = {
+            title: "到棚屋去：与恐惧对象为友",
+            content: "从理性上讲，这种逃避毫无意义。你只有先面对现实，才能有所行动。\n\n你越是刻意回避人生中那些让你焦虑的事情，这些事情就越有可能发展成严重的问题。你越是拖延不去面对，就会花越多不开心的时间，去害怕那些你不愿涉足之处可能潜藏的麻烦。\n\n闭上眼睛，想象自己正在采取行动。不要急着行动，先四处看看，然后评估。把你变成这个空间的主人。\n\n然后……第一批解决方案就会在你眼前浮现。"
+        };
+        solutionDetails["信息过载"] = {
+            title: "信息过载：选择性阅读的艺术",
+            content: "第一条建议是，别把你的待看内容清单当成一个会渐渐装满、需要你清空的桶，而要视作一条经过你身边的河—你可以时不时从中挑几样合意的，不要因为放任其他内容如水般在你面前流过而内疚。\n\n请记住，内容消费和其他任何事情一样，是一种「活在当下」的行为。\n\n这不仅是因为执着于记住事实并非从阅读中获益的好方法，更是因为任何对收益的过度关注都可能掩盖一个真相：最终，有意义的人生至少需要包含一些我们此时此刻能做的、纯粹为了做而做的事。"
+        };
+        solutionDetails["你无法事事挂心"] = {
+            title: "你无法事事挂心：当世界一团糟时，如何保持理智",
+            content: "智慧的艺术在于知道该忽略什么。——威廉·詹姆斯\n\n然而，每天花十分钟了解新闻就够了。\n\n滚动浏览超过十分钟，就有可能使你丧失思维和行为能力，当然也会耗费你本可以用来改变世界的时间。"
+        };
+        solutionDetails["这事容易又怎么了"] = {
+            title: "这事容易又怎么了：费力不一定好",
+            content: "与其问如何唤起精力、动力或自律性去做一件对你很重要的事情，不如问一问：如果这件事比我想象中要容易得多呢？\n\n如果这件事很容易，它会是什么样子？\n\n作家朱莉娅·罗杰斯·哈姆里克在《选择轻松世界》中声称，这就像反复念以下咒语一样简单：\n\n「我选择生活在轻松世界，在那里一切都很容易。」"
+        };
+        solutionDetails["寻找人生任务"] = {
+            title: "寻找人生任务：响应现实呼唤",
+            content: "顾名思义，人生任务就是你的人生对你提出的要求。它或许正好与你父母的期望或社会的理念相符，但也很可能与其背道而驰。\n\n第一，人生任务是你「只有通过努力，克服困难」才能完成的事情—尤其是那种让你感到「太难了，太爽了」的事情，因为它迫使你改弦易辙，走出舒适区。\n\n第二，真正的人生任务虽然完成起来很难，但你一定能完成。\n\n人生任务不一样，它从你的生活环境中涌现。你要凭借你的独特技能、资源和个性，在你实际所处的环境中完成人生任务。\n\n你向你切切实实拥有的人生发问，问当下的任务是什么。你永远不会没有下一步可走。"
+        };
+        solutionDetails["别对未来的你那么好"] = {
+            title: "别对未来的你那么好：沉浸式人生的重要性",
+            content: "现在是唯一真正存在的时间。\n\n你可以追求这些目标，并且在追求的过程中感受到自己真切地活着，全心全意地活着，而不是把「真正活着」的时刻推迟到「目标实现之时」。\n\n当时，他以为未来的自己会感谢他，但现在，他对过去的自己怜悯不已。"
+        };
+        solutionDetails["你不能囤积人生"] = {
+            title: "你不能囤积人生：让时光流逝",
+            content: "体验是用来经历的，不是让你抓住不放的。\n\n为了最大限度地收集体验，抑或为了保证未来还能有这样的体验，你日复一日地忙于把体验「攥在手里」。你永远做不到乐在其中，因为你心里藏着另一个目的。\n\n萨拉·曼古索写道：\n\n「也许所有的焦虑都源于对瞬间的固执—无法接受逝者如斯。」\n\n根据日本茶道精神，转瞬即逝对当下发生的事情不构成威胁，事情反而因为转瞬即逝而具有价值。稍纵即逝才有价值。\n\n一旦你不再握紧当下不放，你的体验感就会更好，你会更充分地沉浸其中。融入它，成为它。"
+        };
+        solutionDetails["反黄金法则"] = {
+            title: "反黄金法则：不要自讨苦吃",
+            content: "皮弗写的是「通过不对自己刻薄来完成任务」。无论如何，善待自己不等于放纵自己。\n\n努力遵循哲学家伊多·兰多所说的「反黄金法则」—不要用那些你永远不会想要用来对待别人的方式来惩罚和毒害自己。\n\n许多人觉得一天到晚暗暗斥责自己没什么大不了的，但你能想象成天斥责朋友吗？\n\n不断地责骂自己反而才是自我放纵，因为这反映了你内心深处那个监工的狂妄信念：他只要吼得足够响，就可以胁迫你去做任何事。\n\n正视现实也意味着正视你的真实情绪、欲望和兴趣。\n\n这就是为什么向自己提出这个问题需要勇气：你想怎样度过今天？"
+        };
+        solutionDetails["别阻碍你的慷慨"] = {
+            title: "别阻碍你的慷慨",
+            content: "你不必如此：你不必试图把自己变成一个对人类怀有更多爱意的人，况且你大概率做不到。\n\n你只需要找到早已令你内心温暖或温柔的地方，然后从那里出发。\n\n戈尔茨坦建议：\n\n「每当助人的念头浮现时，你应当立即行动，以观后效。」\n\n他还补充说：「根据我的经验，慷慨从来不会导致悔恨。」"
+        };
+        solutionDetails["先令神志清明再出发"] = {
+            title: "先令神志清明再出发：犒劳你自己",
+            content: "「神志清明」这意味着平静、专注、充满活力、忙得有意义且有成效、与他人保持紧密联系。\n\n第一步是「决定你想成为什么样的人」，第二步是「立即以这个身份出发行动」。\n\n立刻花一点时间做你最看重的事情，不要等以后，因为你明白，即便今天只花三十分钟做这件事，也比期待只存在于假设中的几百个小时更有价值。\n\n把代办事项当作一份可以从中挑选任务的清单，而非必须逐一完成的任务的列表。\n\n承认你不可能做完所有你想做完的事情，然后在「菜单」上进行选择。"
+        };
+        solutionDetails["规则为人生服务"] = {
+            title: "规则为人生服务：日积月累",
+            content: "「差不多每天做」是一条更有韧性的规则：它不像走钢丝那样高风险，不至于一失足铸成大错，但它实现起来也并不容易—因为它要求你放弃对完美的幻想。\n\n当然，在任何情况下，「差不多每天做」都不等于「看心情做」。\n\n在内心深处，你知道每周两次并不能算作「差不多每天」，但每周五次可以算，忙的时候每周三四次或许也能算。\n\n所以，你还是给自己施加了一些压力。然而最关键的是，你没有寄希望于被规则鞭策着行动。"
+        };
+        solutionDetails["要么是好时光，要么是好故事"] = {
+            title: "要么是好时光，要么是好故事：不可预测之福",
+            content: "人生中不知道未来会发生什么的那段时光，往往是人们在回首往事时最怀念的时光。意识到这一点对你大有裨益。——安·帕切特\n\n愉快而有意义的生活的重点在于，我们在积极融入世界的时候，并不能控制世界对我们的回应。这种体验的价值和深度依赖于这种不可知性。\n\n也许你会得到你想要的，也许你得不到—但有时，得不到你想要的会让人生变得无比美好。"
+        };
+        solutionDetails["不可思议"] = {
+            title: "不可思议：困惑的安慰",
+            content: "如果你生在中世纪，你无法确定饥荒或疾病暴发的原因，看到日全食无法自我安慰这不是世界末日。\n\n但是，由于确定性无从捉摸，你绝不会等到完全搞明白自己所处的具体情境之后才采取行动。你已经习惯了不确定。\n\n她接受了这个事实：她的人生超出了她以往的任何想象，她没有活下去的理由，但与此同时，她也没有理由拒绝活下去、拒绝快乐……\n\n她必须为了活着而活着，无须为此辩解，也无须追求什么成就。\n\n在人类历史的进程中，在一个神秘莫测的世界中随波逐流，不问理由仅凭直觉行事，其实是常态。\n\n我们理解无限复杂的现实的能力有限，仅此而已。别让它妨碍你好好活着。"
+        };
+        solutionDetails["重中之重"] = {
+            title: "重中之重：找到属于你的路",
+            content: "每当你感到焦虑或不知所措的时候，试着把你对现实的感知从你的小天地扩大到整个世界。这会让你清醒过来。\n\n可根据逻辑，任何领域都注定只有极少数人能够出类拔萃。\n\n为什么穷尽职业生涯，默默无闻地帮助少数人不算有意义？为什么一场引人入胜的谈话、一个善意之举、一次令人兴奋的远足不算有意义？\n\n首先，你不必把「大局在握」作为自己努力的目标。恰恰相反，你要全身心地投入某些任务中去，只因为这些任务最让你生机勃勃，最符合你所处的情境。\n\n你可以秉承生态哲学家德里克·詹森精彩的不完美主义精神。他说过：\n\n「一塌糊涂的好处在于，无论你往哪里看，都看得到改进空间。」\n\n你的出生纯属偶然，但命运给了你这个机会。你来了，这就是你的人生。你谈不上重要—但又和任何人一样重要。"
+        };
+        solutionDetails["事在人为"] = {
+            title: "事在人为：试试看",
+            content: "如果现实中存在某种事物，但它不是天然的，那么它一定是一个或多个生而有限的人创造出来的。他们中没有哪一个人比你更有能力克服人类的有限性。\n\n你读过的最棒的小说是人写出来的；地球上最有效的慈善组织是人打造出来的；金门大桥、吉萨金字塔群和凡尔赛宫，也是人让它们平地而起的。\n\n顺理成章，如果前人做到了那么多，你也就没有「天注定」不能做出惊人成就的理由。\n\n你不会觉得胸有成竹。但是，从来没有人胸有成竹。对于生而有限的人类来说，尝试新事物就是这样。\n\n成就伟业的人与不能成就伟业的人之间的主要区别在于，前者并不介意「我不知道」。他们的缺点和有限性并不比你少。他们所做到的一切都是由人做到的。"
+        };
+        solutionDetails["有始有终"] = {
+            title: "有始有终：终之魔力",
+            content: "事实上，完工可以补充你的能量，而非耗尽你的能量。\n\n「工作没完成才是导致精力不足的原因」。\n\n他建议用一天的时间，少想多做，全力以赴地办结未尽事宜：\n\n「这一天结束时，感受一下你的能量水平。你会大吃一惊的。」\n\n请明确你能一气呵成地做出些什么—比如说，在接下来的几分钟内，或者最多一两个小时内，能做完什么；然后全力以赴，直到达成。"
+        };
+
+        function renderTroubleList() {
+            var container = document.getElementById('troubleList');
+            var html = '';
+            for (var trouble in troubleIndex) {
+                html += '<div class="trouble-item" onclick="selectTrouble(\'' + trouble + '\')">' + trouble + '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        function selectTrouble(trouble) {
+            var items = document.querySelectorAll('.trouble-item');
+            for (var i = 0; i < items.length; i++) {
+                items[i].classList.remove('active');
+                if (items[i].textContent === trouble) {
+                    items[i].classList.add('active');
+                }
+            }
+            var solutions = troubleIndex[trouble];
+            document.getElementById('solutionsTitle').textContent = '「' + trouble + '」的解法';
+            var cardsHtml = '';
+            for (var i = 0; i < solutions.length; i++) {
+                cardsHtml += '<div class="solution-card" onclick="showDetail(\'' + solutions[i] + '\')"><span>' + solutions[i] + '</span><span class="arrow">→</span></div>';
+            }
+            document.getElementById('solutionCards').innerHTML = cardsHtml;
+            document.getElementById('solutionsPanel').classList.add('show');
+            document.getElementById('detailPanel').classList.remove('show');
+            document.getElementById('solutionsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showDetail(solution) {
+            var detail = solutionDetails[solution];
+            if (detail) {
+                document.getElementById('detailTitle').textContent = detail.title;
+                document.getElementById('detailContent').textContent = detail.content;
+                document.getElementById('detailPanel').classList.add('show');
+                document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function goBackToSolutions() {
+            document.getElementById('detailPanel').classList.remove('show');
+            document.getElementById('solutionsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        renderTroubleList();
+    </script>
+</body>
+</html>
