@@ -39,11 +39,36 @@
             margin-bottom: 20px;
             padding-left: 5px;
         }
+        .category {
+            margin-bottom: 40px;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-left: 5px;
+        }
+        .category-icon {
+            font-size: 1.3em;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .category-name {
+            font-size: 0.95em;
+            color: #888;
+            letter-spacing: 2px;
+        }
         .trouble-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 12px;
-            margin-bottom: 50px;
+            margin-bottom: 10px;
         }
         .trouble-item {
             background: linear-gradient(145deg, #1a1a2e, #16162a);
@@ -178,7 +203,7 @@
         </header>
 
         <p class="section-title">你在苦恼什么？</p>
-        <div class="trouble-list" id="troubleList"></div>
+        <div id="troubleList"></div>
 
         <div class="solutions-panel" id="solutionsPanel">
             <div class="solutions-title" id="solutionsTitle"></div>
@@ -344,11 +369,62 @@
             content: "事实上，完工可以补充你的能量，而非耗尽你的能量。\n\n「工作没完成才是导致精力不足的原因」。\n\n他建议用一天的时间，少想多做，全力以赴地办结未尽事宜：\n\n「这一天结束时，感受一下你的能量水平。你会大吃一惊的。」\n\n请明确你能一气呵成地做出些什么—比如说，在接下来的几分钟内，或者最多一两个小时内，能做完什么；然后全力以赴，直到达成。"
         };
 
+        var categories = [
+            {
+                name: "情绪困扰",
+                icon: "🌀",
+                color: "rgba(239, 68, 68, 0.15)",
+                items: ["愤怒", "焦虑", "气馁", "易怒", "内疚", "悲观", "后悔"]
+            },
+            {
+                name: "动力与行动",
+                icon: "⚡",
+                color: "rgba(234, 179, 8, 0.15)",
+                items: ["动力不足", "拖延", "回避", "害怕行动", "缺乏恒心", "怯懦", "未竟事务"]
+            },
+            {
+                name: "思维与决策",
+                icon: "🧠",
+                color: "rgba(99, 102, 241, 0.15)",
+                items: ["分析瘫痪", "犹豫不决", "完美主义", "写作瓶颈", "信息过载_苦恼", "分心"]
+            },
+            {
+                name: "自我认知",
+                icon: "🪞",
+                color: "rgba(168, 85, 247, 0.15)",
+                items: ["冒名顶替综合征", "不安全感", "自我批评", "无力感", "在意他人看法", "控制欲"]
+            },
+            {
+                name: "意义与方向",
+                icon: "🔭",
+                color: "rgba(20, 184, 166, 0.15)",
+                items: ["失去方向", "无意义感", "了无生趣", "绝望", "对世界绝望", "脱离现实"]
+            },
+            {
+                name: "生活节奏",
+                icon: "⏱️",
+                color: "rgba(59, 130, 246, 0.15)",
+                items: ["忙碌", "匆忙", "生产力低下", "恐惧未来", "人际关系"]
+            }
+        ];
+
         function renderTroubleList() {
             var container = document.getElementById('troubleList');
             var html = '';
-            for (var trouble in troubleIndex) {
-                html += '<div class="trouble-item" onclick="selectTrouble(\'' + trouble + '\')">' + trouble + '</div>';
+            for (var c = 0; c < categories.length; c++) {
+                var cat = categories[c];
+                html += '<div class="category">';
+                html += '<div class="category-header">';
+                html += '<div class="category-icon" style="background:' + cat.color + '">' + cat.icon + '</div>';
+                html += '<span class="category-name">' + cat.name + '</span>';
+                html += '</div>';
+                html += '<div class="trouble-list">';
+                for (var i = 0; i < cat.items.length; i++) {
+                    var name = cat.items[i];
+                    var label = name.replace('_苦恼', '');
+                    html += '<div class="trouble-item" onclick="selectTrouble(\'' + name + '\')">' + label + '</div>';
+                }
+                html += '</div></div>';
             }
             container.innerHTML = html;
         }
@@ -362,7 +438,8 @@
                 }
             }
             var solutions = troubleIndex[trouble];
-            document.getElementById('solutionsTitle').textContent = '「' + trouble + '」的解法';
+            var displayName = trouble.replace('_苦恼', '');
+            document.getElementById('solutionsTitle').textContent = '「' + displayName + '」的解法';
             var cardsHtml = '';
             for (var i = 0; i < solutions.length; i++) {
                 cardsHtml += '<div class="solution-card" onclick="showDetail(\'' + solutions[i] + '\')"><span>' + solutions[i] + '</span><span class="arrow">→</span></div>';
