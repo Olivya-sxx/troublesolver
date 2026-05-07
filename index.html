@@ -39,54 +39,70 @@
             margin-bottom: 20px;
             padding-left: 5px;
         }
+        .categories-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
         .category {
-            margin-bottom: 40px;
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 28px 24px;
+            transition: all 0.3s ease;
+        }
+        .category:hover {
+            border-color: #3a3a5a;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         }
         .category-header {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 16px;
-            padding-left: 5px;
+            margin-bottom: 20px;
         }
         .category-icon {
             font-size: 1.3em;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 12px;
             flex-shrink: 0;
         }
         .category-name {
-            font-size: 0.95em;
-            color: #888;
+            font-size: 1em;
+            color: #aaa;
             letter-spacing: 2px;
+            font-weight: 500;
         }
         .trouble-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        @media (max-width: 700px) {
+            .categories-grid { grid-template-columns: 1fr; }
         }
         .trouble-item {
-            background: linear-gradient(145deg, #1a1a2e, #16162a);
-            border: 1px solid #2a2a4a;
-            border-radius: 12px;
-            padding: 18px 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 14px 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
-            font-size: 14px;
-            color: #aaa;
+            font-size: 13px;
+            color: #999;
         }
         .trouble-item:hover {
-            background: linear-gradient(145deg, #252545, #1e1e38);
-            border-color: #4a4a7a;
+            background: rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.3);
             color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
         .trouble-item.active {
             background: linear-gradient(145deg, #2d1f5e, #1a1040);
@@ -410,7 +426,7 @@
 
         function renderTroubleList() {
             var container = document.getElementById('troubleList');
-            var html = '';
+            var html = '<div class="categories-grid">';
             for (var c = 0; c < categories.length; c++) {
                 var cat = categories[c];
                 html += '<div class="category">';
@@ -426,6 +442,7 @@
                 }
                 html += '</div></div>';
             }
+            html += '</div>';
             container.innerHTML = html;
         }
 
